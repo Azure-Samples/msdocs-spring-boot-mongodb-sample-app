@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="theme-color" content="#000000" />
+    <title>Todo List App</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" />
+    <style>
+        .list-group-item { word-wrap: break-word; }
+        #todolist button { margin-left: 5px; }
+    </style>
+</head>
+<body ng-app="todoApp" ng-controller="todoListCtrl" role="document">
+
+<div class="container" role="main" style="margin-top: 30px !important;">
+    <div ng-view class="panel-body">
+</div>
+</div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
+<script src="https://code.angularjs.org/1.2.25/angular-route.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="Scripts/app.js"></script>
+<script src="Scripts/todoListCtrl.js"></script>
+<script src="Scripts/todoListSvc.js"></script>
+</html>
