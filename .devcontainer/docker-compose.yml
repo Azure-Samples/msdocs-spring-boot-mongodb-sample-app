@@ -3,7 +3,7 @@ version: '3.8'
 services:
   app:
     container_name: javadev
-    image: mcr.microsoft.com/devcontainers/java:1-21-bullseye
+    image: mcr.microsoft.com/devcontainers/java:25-bookworm
     environment: 
       # NOTE: MONGODB_HOST/DATABASE/USER/PASSWORD should match values in db container
       MONGODB_URI: mongodb://${ENV_DB_USER}:${ENV_DB_PASSWORD}@db:27017/${ENV_DB_DATABASE}?authSource=admin

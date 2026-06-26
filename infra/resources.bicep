@@ -160,7 +160,7 @@ resource privateDnsZoneDB 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   }
 }
 
-// Resources needed to secure Redis Cache behind a private endpoint
+// Resources needed to secure Azure Managed Redis behind a private endpoint
 resource cachePrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-04-01' = {
   name: '${appName}-cache-privateEndpoint'
   location: location
@@ -173,7 +173,7 @@ resource cachePrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-04-01' = 
         name: '${appName}-cache-privateEndpoint'
         properties: {
           privateLinkServiceId: redisCache.id
-          groupIds: ['redisCache']
+          groupIds: ['redisEnterprise']
         }
       }
     ]
@@ -193,7 +193,7 @@ resource cachePrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-04-01' = 
   }
 }
 resource privateDnsZoneCache 'Microsoft.Network/privateDnsZones@2020-06-01' = {
-  name: 'privatelink.redis.cache.windows.net'
+  name: 'privatelink.redisenterprise.cache.azure.net'
   location: 'global'
   dependsOn: [
     virtualNetwork
@@ -291,20 +291,23 @@ resource dbaccount 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' = {
   }
 }
 
-// The Redis cache is configured to the minimum pricing tier
-resource redisCache 'Microsoft.Cache/Redis@2023-08-01' = {
+// Azure Managed Redis configured to the minimum pricing tier.
+resource redisCache 'Microsoft.Cache/redisEnterprise@2026-02-01-preview' = {
   name: '${appName}-cache'
   location: location
+  sku: {
+    name: 'Balanced_B0'
+  }
   properties: {
-    sku: {
-      name: 'Basic'
-      family: 'C'
-      capacity: 0
-    }
-    redisConfiguration: {}
-    enableNonSslPort: false
-    redisVersion: '6'
+    minimumTlsVersion: '1.2'
     publicNetworkAccess: 'Disabled'
+  }
+
+  resource redisDatabase 'databases@2026-02-01-preview' = {
+    name: 'default'
+    properties: {
+      accessKeysAuthentication: 'Enabled'
+    }
   }
 }
 
@@ -327,7 +330,7 @@ resource web 'Microsoft.Web/sites@2022-09-01' = {
   tags: {'azd-service-name': 'web'} // Needed by AZD
   properties: {
     siteConfig: {
-      linuxFxVersion: 'JAVA|21-java21' // Set to Java SE 21
+      linuxFxVersion: 'JAVA|25-java25' // Set to Java SE 25
       vnetRouteAllEnabled: true // Route outbound traffic to the VNET
       ftpsState: 'Disabled'
     }
@@ -442,7 +445,7 @@ resource cacheConnector 'Microsoft.ServiceLinker/linkers@2024-04-01' = {
     clientType: 'springBoot'
     targetService: {
       type: 'AzureResource'
-      id:  resourceId('Microsoft.Cache/Redis/Databases', redisCache.name, '0')
+      id: redisCache::redisDatabase.id
     }
     authInfo: {
       authType: 'accessKey' // Configure secrets as Key Vault references. No secret is exposed in App Service.
